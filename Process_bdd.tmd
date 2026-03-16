@@ -1,0 +1,116 @@
+# Processus de Migration : Supabase vers SQL Relationnel (Classique)
+
+Ce document détaille les étapes pour migrer l'application existante (Vue.js + Supabase) vers une architecture classique : **Base de données SQL (MariaDB/MySQL)** + **API Backend (Node.js/Express)** + **Frontend (modifié)**.
+
+> **Note** : Puisque Supabase fournit à la fois la base de données, l'authentification et l'API (via le client JS), s'en séparer implique de créer un **serveur backend** pour gérer ces fonctionnalités.
+
+---
+
+## 📅 Sommaire
+1. [Solutions de Base de Données Gratuites](#1-solutions-de-base-de-données-gratuites)
+2. [Étape 1 : Préparation de la Base de Données](#étape-1--préparation-de-la-base-de-données)
+3. [Étape 2 : Création du Backend (API)](#étape-2--création-du-backend-api)
+4. [Étape 3 : Migration du Frontend](#étape-3--migration-du-frontend)
+5. [Prompts pour l'IA (Antigravity)](#prompts-pour-lia-antigravity)
+
+---
+
+## 1. Solutions de Base de Données Gratuites
+
+Puisque vous avez déjà un **NAS avec MariaDB**, c'est la solution idéale et gratuite pour vous. Voici d'autres options si besoin :
+
+1.  **Neon.tech** (PostgreSQL uniquement)
+2.  **Filess.io** (MySQL/MariaDB/PostgreSQL) : Hébergement gratuit.
+3.  **Local (Docker/WAMP/XAMPP)** : 100% gratuit.
+
+---
+
+## 2. Processus de Migration (Vue d'ensemble)
+
+### Étape 1 : Préparation de la Base de Données
+Il faut définir le schéma SQL (tables) qui correspond à ce qui est actuellement dans Supabase, adapté pour MariaDB.
+
+**Tables identifiées dans le code :**
+- `profiles` (Utilisateurs)
+- `gallery_items` (Galerie)
+- `flash_tattoos` (Flashs)
+- `bookings` (Réservations)
+- `messages` (Messages contact)
+- `blog_posts` (Articles)
+- `banners` (Bannières)
+- `promos` (Codes promo)
+- `notes` (Notes internes)
+
+### Étape 2 : Création du Backend (API)
+Supabase permettait d'appeler la BDD directement depuis le frontend (`supabase.from...`). Avec une BDD classique, c'est **interdit** pour des raisons de sécurité.
+Il faut créer un dossier `server` (Node.js + Express) qui servira d'API.
+
+**Structure cible du backend :**
+- `server/`
+    - `index.js` (Point d'entrée)
+    - `routes/` (auth.js, gallery.js, flash.js...)
+    - `config/` (db.js - connexion SQL)
+
+### Étape 3 : Migration du Frontend
+Remplacer toutes les appels `supabase` par des appels API (ex: `axios.get('/api/gallery')`).
+Il faudra aussi gérer l'upload d'images (stockage local ou S3) à la place de Supabase Storage.
+
+---
+
+## 3. Prompts pour l'IA (Antigravity)
+
+Voici les prompts à copier-coller un par un à votre assistant pour qu'il effectue le travail.
+
+### Prompt 1 : Création du Backend et Connexion BDD
+> "Je veux migrer de Supabase vers une base SQL classique (MariaDB/MySQL).
+> Crée un dossier `/server` à la racine. Initialise un projet Node.js (`package.json`).
+> Installe les dépendances : `express`, `mysql2`, `cors`, `dotenv`, `multer` (pour les images).
+> Crée un fichier `server/db.js` pour la connexion à la base de données (utilise des variables d'environnement).
+> Crée un fichier SQL `server/schema.sql` qui contient les instructions `CREATE TABLE` pour reproduire les tables suivantes basées sur mon code actuel : `profiles`, `gallery_items`, `flash_tattoos`, `bookings`, `messages`, `blog_posts`, `banners`, `promos`, `notes`."
+
+### Prompt 2 : Création des routes API (CRUD)
+> "Dans le dossier `/server`, crée les routes API pour remplacer Supabase.
+> Crée un fichier `server/index.js` qui configure Express et utilise les routes.
+> Crée des fichiers de route dans `server/routes/` pour chaque entité (gallery, flash, booking, etc.).
+> Pour chaque route, implémente les méthode GET, POST, PUT, DELETE qui effectuent les requêtes SQL correspondantes.
+> Pour l'instant, ne mets pas de middleware d'authentification complexe, concentrons-nous sur le CRUD."
+
+### Prompt 3 : Gestion de l'Authentification (Remplacement Auth Supabase)
+> "Implémente un système d'authentification simple dans le backend pour remplacer `supabase.auth`.
+> Ajoute `jsonwebtoken` et `bcrypt` aux dépendances.
+> Crée une route `/auth/login` qui vérifie l'email/password dans la table `profiles` (ou `users`) et renvoie un token JWT.
+> Crée un middleware `authMiddleware.js` pour protéger les routes POST/PUT/DELETE.
+> Mets à jour la table `profiles` pour inclure un champ `password_hash`."
+
+### Prompt 4 : Gestion des Fichiers (Images)
+> "Remplace Supabase Storage par un upload local.
+> Configure `multer` dans le backend pour enregistrer les images reçues dans un dossier `server/uploads` (ou `public/uploads`).
+> Crée une route POST `/upload` qui accepte un fichier et renvoie son URL d'accès.
+> Configure Express pour servir le dossier `uploads` en statique."
+
+### Prompt 5 : Refactoring du Frontend (Stores)
+> "Maintenant, modifie le frontend pour utiliser notre nouvelle API au lieu de `supabaseClient`.
+> Crée un fichier `src/lib/api.js` qui configure une instance `axios` (ou `fetch`) pointant vers `http://localhost:3000`.
+> Modifie fichier par fichier les stores dans `src/stores/` (commence par `gallery.js` et `flash.js`).
+> Remplace les appels `supabase.from('...').select()` par `api.get('/...')`.
+> Remplace les uploads `supabase.storage` par l'appel à la route `/upload`."
+
+---
+
+## 4. Manipulations Manuelles (Pour vous)
+
+Une fois que l'IA aura généré le code, voici ce que vous devrez faire :
+
+1.  **Installer/Préparer la BDD** :
+    *   Sur votre **NAS**, ouvrez **phpMyAdmin**.
+    *   Créez une nouvelle base de données appelée `vanely_tattoo`.
+    *   Sélectionnez la base, allez dans l'onglet **SQL**, copiez le contenu de `server/schema.sql` et cliquez sur **Exécuter**.
+2.  **Configurer le backend** :
+    *   Aller dans le dossier `server`.
+    *   Créer un fichier `.env` à partir de `.env.example` avec vos accès NAS (IP, utilisateur, mot de passe).
+    *   Lancer le serveur : `npm start` (ou `npm run dev`).
+3.  **Lancer le frontend** :
+    *   Mettre à jour le `.env` du frontend si nécessaire pour pointer vers l'API locale.
+    *   `npm run dev`.
+
+Vous aurez alors une architecture totalement indépendante de Supabase.
