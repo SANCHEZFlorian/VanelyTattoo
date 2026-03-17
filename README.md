@@ -75,6 +75,30 @@ npm run dev
 
 ---
 
+## 🔝 Déploiement & Mise à Jour
+
+### 🔄 Mise à jour rapide (One-liner)
+À exécuter sur le serveur dans le dossier du projet pour tout mettre à jour d'un coup :
+
+```bash
+git pull && npm ci && npm run build && cd server && npm ci && pm2 restart all
+```
+
+### 💡 Créer un Alias (Recommandé)
+Pour mettre à jour le site avec une seule commande (ex: `update-vanely`), suivez ces étapes sur votre serveur :
+
+1. Ouvrez votre configuration bash : `nano ~/.bashrc`
+2. Ajoutez cette ligne à la fin :
+   ```bash
+   alias update-vanely='cd /var/www/VanelyTattoo && git pull && npm ci && npm run build && cd server && npm ci && pm2 restart all && cd ..'
+   ```
+   *(Ajustez `/var/www/VanelyTattoo` selon votre vrai chemin)*
+3. Sauvegardez (`Ctrl+O`, `Enter`, `Ctrl+X`) et activez : `source ~/.bashrc`
+
+Désormais, tapez simplement `update-vanely` pour synchroniser et redémarrer le site !
+
+---
+
 ## 📂 Structure du projet
 - `src/` : Code source Vue.js (Frontend)
 - `server/` : API Express & Base de données (Backend)
