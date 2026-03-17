@@ -1,36 +1,34 @@
+/**
+ * Normalize an image path to the correct URL for the current environment.
+ *
+ * Rules:
+ *  1. Empty / null → return ''
+ *  2. data: URIs → return as-is (base64 previews)
+ *  3. ALWAYS rewrite any http://localhost:PORT/uploads/... → /uploads/...
+ *     (old images were stored with the full localhost URL in DB)
+ *  4. Paths already starting with /uploads → return as-is
+ *  5. Bare filename or any other relative path → prefix with /uploads/
+ */
 export const getImageUrl = (path) => {
   if (!path) return ''
-  if (path.startsWith('http') || path.startsWith('data:')) {
-    // If we have an old localhost URL but we are in production, try to fix it
-    if (path.includes('localhost') && typeof window !== 'undefined' && !window.location.hostname.includes('localhost')) {
-      const parts = path.split('/uploads/')
-      if (parts.length > 1) {
-        return `/uploads/${parts[1]}`
-      }
-    }
-    return path
-  }
-  
-  // Get API URL from env or default
-  const apiUrl = import.meta.env.VITE_API_URL || ''
-  
-  // If apiUrl is a full URL (like http://api.example.com), use it.
-  // If it's relative (like /api), we might need to handle it differently depending on hosting.
-  // Given the current setup, if images are served at /uploads on the backend:
-  
-  if (apiUrl.startsWith('http')) {
-    // Return http://api.com/uploads/...
-    // Ensure we don't double the slash
-    const base = apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl
-    const p = path.startsWith('/') ? path : `/${path}`
-    // If path already starts with /uploads, we need to be careful if apiUrl includes /api
-    // Usually images are at the root of the backend, not under /api
-    // In server/index.js: app.use('/uploads', express.static('uploads'))
-    // So if apiUrl is http://host:3000/api, images are at http://host:3000/uploads
-    const domain = base.replace(/\/api$/, '')
-    return `${domain}${p}`
+
+  // Base64 previews – keep as-is
+  if (path.startsWith('data:')) return path
+
+  // Always normalize localhost URLs regardless of current environment.
+  // This fixes old images that were saved as http://localhost:PORT/uploads/filename
+  if (path.includes('localhost') && path.includes('/uploads/')) {
+    const filename = path.split('/uploads/').pop()
+    return `/uploads/${filename}`
   }
 
-  // If apiUrl is relative or not set, assume images are on the same domain
-  return path.startsWith('/') ? path : `/${path}`
+  // Already a relative /uploads/ path → fine
+  if (path.startsWith('/uploads/')) return path
+
+  // Fully qualified non-localhost URL (e.g. CDN) → return as-is
+  if (path.startsWith('http')) return path
+
+  // Bare filename or other relative segment → prefix with /uploads/
+  const clean = path.startsWith('/') ? path.slice(1) : path
+  return `/uploads/${clean}`
 }
