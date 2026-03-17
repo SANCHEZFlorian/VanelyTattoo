@@ -95,6 +95,12 @@ const removeFile = (index) => {
 }
 
 // Normalized computed property to always treat modelValue as array for display
+const displayFiles = computed(() => {
+  const items = Array.isArray(props.modelValue)
+    ? props.modelValue
+    : props.modelValue
+      ? [props.modelValue]
+      : []
   return items.map((item) => (typeof item === 'string' ? getImageUrl(item) : item.url))
 })
 </script>
