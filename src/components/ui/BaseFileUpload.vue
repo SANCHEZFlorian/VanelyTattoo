@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { getImageUrl } from '../../utils/imageUtils'
 
 const props = defineProps({
   modelValue: {
@@ -94,14 +95,7 @@ const removeFile = (index) => {
 }
 
 // Normalized computed property to always treat modelValue as array for display
-import { computed } from 'vue'
-const displayFiles = computed(() => {
-  const items = Array.isArray(props.modelValue)
-    ? props.modelValue
-    : props.modelValue
-      ? [props.modelValue]
-      : []
-  return items.map((item) => (typeof item === 'string' ? item : item.url))
+  return items.map((item) => (typeof item === 'string' ? getImageUrl(item) : item.url))
 })
 </script>
 

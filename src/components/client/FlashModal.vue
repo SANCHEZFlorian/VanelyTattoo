@@ -3,6 +3,7 @@ import { ref, watch } from 'vue'
 import { useMessageStore } from '../../stores/message'
 import { usePromoStore } from '../../stores/promo'
 import { useNotificationStore } from '../../stores/notification'
+import { getImageUrl } from '../../utils/imageUtils'
 
 const props = defineProps({
   isOpen: Boolean,
@@ -124,7 +125,7 @@ const copyLink = () => {
           <!-- Left side - Image -->
           <div class="md:w-1/2 h-64 md:h-auto relative">
             <img
-              :src="item?.images?.[0]"
+              :src="getImageUrl(item?.images?.[0])"
               :alt="item?.title"
               class="w-full h-full object-cover object-top rounded-t-lg md:rounded-l-lg md:rounded-tr-none"
             />

@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
 import { useClientStore } from '../../stores/client'
 import { usePromoStore } from '../../stores/promo'
+import { getImageUrl } from '../../utils/imageUtils'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -80,7 +81,7 @@ const goToFlash = (id) => {
           <div class="relative cursor-pointer" @click="goToFlash(flash.id)">
             <img
               :src="
-                flash.images && flash.images[0] ? flash.images[0] : '/images/generic_tattoo.png'
+                flash.images && flash.images[0] ? getImageUrl(flash.images[0]) : '/images/generic_tattoo.png'
               "
               :alt="flash.title"
               class="w-full h-48 object-cover object-top"

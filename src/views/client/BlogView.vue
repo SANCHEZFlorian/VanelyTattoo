@@ -2,6 +2,7 @@
 import { onMounted } from 'vue'
 import { useBlogStore } from '@/stores/blog'
 import { useRouter } from 'vue-router'
+import { getImageUrl } from '@/utils/imageUtils'
 
 const router = useRouter()
 const blogStore = useBlogStore()
@@ -43,7 +44,7 @@ const goToArticle = (id) => {
         >
           <div class="h-48 overflow-hidden">
             <img
-              :src="post.image"
+              :src="getImageUrl(post.image)"
               :alt="post.title"
               class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
             />

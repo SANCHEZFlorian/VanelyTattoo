@@ -247,7 +247,7 @@
                     :key="item.id"
                     class="flex items-center space-x-3 border-b border-gray-50 pb-2 last:border-0 last:pb-0"
                 >
-                    <img :src="item.images[0]" class="w-10 h-10 object-cover rounded-lg bg-gray-100" />
+                    <img :src="getImageUrl(item.images[0])" class="w-10 h-10 object-cover rounded-lg bg-gray-100" />
                     <div class="flex-1 min-w-0">
                         <h4 class="font-medium text-gray-800 text-sm truncate">{{ item.title }}</h4>
                         <p class="text-xs text-gray-500">{{ item.price }}€</p>
@@ -270,7 +270,7 @@
                     :key="item.id"
                     class="flex items-center space-x-3 border-b border-gray-50 pb-2 last:border-0 last:pb-0"
                 >
-                    <img :src="item.images[0]" class="w-10 h-10 object-cover rounded-lg bg-gray-100" />
+                    <img :src="getImageUrl(item.images[0])" class="w-10 h-10 object-cover rounded-lg bg-gray-100" />
                     <div class="flex-1 min-w-0">
                         <h4 class="font-medium text-gray-800 text-sm truncate">{{ item.title }}</h4>
                         <p class="text-xs text-gray-500">{{ item.category }}</p>
@@ -327,6 +327,7 @@ import { useBookingStore } from '@/stores/booking'
 import { useMessageStore } from '@/stores/message'
 import { useBlogStore } from '@/stores/blog'
 import { useNotificationStore } from '@/stores/notification'
+import { getImageUrl } from '@/utils/imageUtils'
 import ConfirmModal from '@/components/ui/ConfirmModal.vue'
 
 const router = useRouter()

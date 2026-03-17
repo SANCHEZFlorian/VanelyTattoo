@@ -8,6 +8,7 @@ import { useClientStore } from '../../stores/client'
 import { useAuthStore } from '../../stores/auth'
 import FlashModal from '../../components/client/FlashModal.vue'
 import { normalizeString } from '../../utils/stringUtils'
+import { getImageUrl } from '../../utils/imageUtils'
 
 const router = useRouter()
 const route = useRoute()
@@ -300,7 +301,7 @@ watch(
           >
             <div class="relative">
               <img
-                :src="flash.images[0]"
+                :src="getImageUrl(flash.images[0])"
                 :alt="flash.title"
                 class="w-full h-64 object-cover object-top"
               />

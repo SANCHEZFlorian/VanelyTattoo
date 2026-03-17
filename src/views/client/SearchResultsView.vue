@@ -5,6 +5,7 @@ import { useFlashStore } from '../../stores/flash'
 import { useGalleryStore } from '../../stores/gallery'
 import { useBlogStore } from '../../stores/blog'
 import { normalizeString } from '../../utils/stringUtils'
+import { getImageUrl } from '../../utils/imageUtils'
 
 const route = useRoute()
 const router = useRouter()
@@ -56,9 +57,9 @@ const counts = computed(() => ({
 }))
 
 const getItemImage = (item, type) => {
-  if (type === 'flash') return item.images?.[0] || '/images/generic_tattoo.png'
-  if (type === 'gallery') return item.image_url || '/images/generic_tattoo.png'
-  if (type === 'blog') return item.image || '/images/hero_1.png'
+  if (type === 'flash') return getImageUrl(item.images?.[0]) || '/images/generic_tattoo.png'
+  if (type === 'gallery') return getImageUrl(item.images?.[0]) || '/images/generic_tattoo.png'
+  if (type === 'blog') return getImageUrl(item.image) || '/images/hero_1.png'
   return '/images/generic_tattoo.png'
 }
 

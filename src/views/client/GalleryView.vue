@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import { useGalleryStore } from '../../stores/gallery'
 import { useCategoryStore } from '../../stores/category'
 import FlashModal from '../../components/client/FlashModal.vue'
+import { getImageUrl } from '../../utils/imageUtils'
 
 const route = useRoute()
 const galleryStore = useGalleryStore()
@@ -101,7 +102,7 @@ watch(
         class="break-inside-avoid bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer"
         @click="openModal(item)"
       >
-        <img :src="item.images[0]" :alt="item.title" class="w-full object-cover object-top" />
+        <img :src="getImageUrl(item.images[0])" :alt="item.title" class="w-full object-cover object-top" />
         <div class="p-4">
           <h3 class="font-semibold mb-1">{{ item.title }}</h3>
           <p class="text-sm text-gray-600">{{ item.categories.join(', ') }}</p>

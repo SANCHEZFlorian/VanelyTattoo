@@ -7,6 +7,7 @@ import api from '@/lib/api'
 import BaseInput from '../../components/ui/BaseInput.vue'
 import BaseFileUpload from '../../components/ui/BaseFileUpload.vue'
 import { useNotificationStore } from '../../stores/notification'
+import { getImageUrl } from '../../utils/imageUtils'
 
 const router = useRouter()
 const route = useRoute()
@@ -91,7 +92,7 @@ const insertTag = (tag) => {
 const insertFlash = (flash) => {
   const cardHtml = `
 <div class="my-6 p-4 border border-purple-100 rounded-xl bg-purple-50 flex flex-col md:flex-row gap-4 items-center not-prose">
-  <img src="${flash.images[0]}" alt="${flash.title}" class="w-32 h-32 object-cover rounded-lg shadow-sm" />
+  <img src="${getImageUrl(flash.images[0])}" alt="${flash.title}" class="w-32 h-32 object-cover rounded-lg shadow-sm" />
   <div class="flex-1 text-center md:text-left">
     <h4 class="font-bold text-lg text-gray-800">${flash.title}</h4>
     <p class="text-sm text-gray-600 mb-2">${flash.categories.join(', ')}</p>
@@ -335,7 +336,7 @@ const insertCTA = () => {
           <div class="h-48 relative bg-gray-200">
             <img
               v-if="formData.image"
-              :src="formData.image.url || formData.image"
+              :src="getImageUrl(formData.image.url || formData.image)"
               class="w-full h-full object-cover"
             />
             <div
@@ -372,7 +373,7 @@ const insertCTA = () => {
             class="border rounded-lg overflow-hidden cursor-pointer hover:border-purple-500 hover:shadow-md transition-all group"
             @click="insertFlash(flash)"
           >
-            <img :src="flash.images[0]" class="w-full h-32 object-cover" />
+            <img :src="getImageUrl(flash.images[0])" class="w-full h-32 object-cover" />
             <div class="p-2">
               <p class="font-medium text-sm truncate">{{ flash.title }}</p>
               <p class="text-xs text-gray-500">{{ flash.price }}€</p>

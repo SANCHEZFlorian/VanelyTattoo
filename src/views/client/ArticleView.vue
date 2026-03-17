@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useBlogStore } from '@/stores/blog'
+import { getImageUrl } from '@/utils/imageUtils'
 
 const route = useRoute()
 const router = useRouter()
@@ -57,7 +58,7 @@ onMounted(async () => {
 
       <article class="bg-white rounded-2xl shadow-xl overflow-hidden">
         <div class="h-64 md:h-96 relative">
-          <img :src="post.image" :alt="post.title" class="w-full h-full object-cover" />
+          <img :src="getImageUrl(post.image)" :alt="post.title" class="w-full h-full object-cover" />
           <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
           <div class="absolute bottom-0 left-0 p-8 text-white">
             <span class="text-blue-200 font-medium mb-2 block">{{ post.date }}</span>

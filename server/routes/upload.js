@@ -45,7 +45,7 @@ router.post('/', authMiddleware, upload.single('image'), (req, res) => {
         // Return the full URL
         // Note: In production, you might want to use a fixed domain from .env
         const baseUrl = `${req.protocol}://${req.get('host')}`;
-        const fileUrl = `${baseUrl}/uploads/${req.file.filename}`;
+        const fileUrl = `/uploads/${req.file.filename}`;
 
         res.json({
             message: 'Upload successful',

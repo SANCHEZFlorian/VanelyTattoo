@@ -106,7 +106,7 @@
                   class="w-24 h-12 rounded bg-gray-100 border border-gray-100 overflow-hidden shadow-sm"
                 >
                   <img
-                    :src="banner.image_url"
+                    :src="getImageUrl(banner.image_url)"
                     :alt="banner.title"
                     class="w-full h-full object-cover"
                   />
@@ -275,6 +275,7 @@ import BaseFileUpload from '../../components/ui/BaseFileUpload.vue'
 import ConfirmModal from '../../components/ui/ConfirmModal.vue'
 import { usePagination } from '../../composables/usePagination'
 import { normalizeString } from '../../utils/stringUtils'
+import { getImageUrl } from '../../utils/imageUtils'
 
 const bannerStore = useBannerStore()
 const showModal = ref(false)

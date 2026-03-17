@@ -5,6 +5,7 @@ import { useBannerStore } from '../../stores/banner'
 import { useFlashStore } from '../../stores/flash'
 import { useBlogStore } from '../../stores/blog'
 import { usePromoStore } from '../../stores/promo'
+import { getImageUrl } from '../../utils/imageUtils'
 
 const router = useRouter()
 const bannerStore = useBannerStore()
@@ -33,7 +34,7 @@ const heroSlides = computed(() => {
 
   return activeBanners.map((slide, index) => ({
     id: slide.id,
-    image: slide.image_url,
+    image: getImageUrl(slide.image_url),
     title: slide.title,
     description: slide.description,
     buttonText: slide.button_text || 'Découvrir',
@@ -121,7 +122,7 @@ const highlightedFlashes = computed(() => {
       id: t.id,
       title: t.title,
       description: t.description || 'Coup de coeur du moment',
-      image: t.images && t.images.length > 0 ? t.images[0] : '/images/generic_tattoo.png',
+      image: t.images && t.images.length > 0 ? getImageUrl(t.images[0]) : '/images/generic_tattoo.png',
       price: t.price,
       promoPrice: t.promo_price, // Optional display
     }))
@@ -135,7 +136,7 @@ const featuredWorks = computed(() => {
       id: t.id,
       title: t.title,
       description: t.description || 'Nouveau flash disponible',
-      image: t.images && t.images.length > 0 ? t.images[0] : '/images/generic_tattoo.png',
+      image: t.images && t.images.length > 0 ? getImageUrl(t.images[0]) : '/images/generic_tattoo.png',
     }))
 })
 
@@ -153,7 +154,7 @@ const promoWorks = computed(() => {
       title: t.title,
       price: t.price,
       discountedPrice: promoStore.getDiscountedPrice(t.price, t.id, t.discount),
-      image: t.images && t.images.length > 0 ? t.images[0] : '/images/generic_tattoo.png',
+      image: t.images && t.images.length > 0 ? getImageUrl(t.images[0]) : '/images/generic_tattoo.png',
     }))
 })
 
@@ -166,7 +167,7 @@ const latestPosts = computed(() => {
       title: p.title,
       excerpt: p.excerpt || (p.content ? p.content.substring(0, 100) + '...' : ''),
       date: p.date,
-      image: p.image || '/images/hero_1.png',
+      image: p.image?.[0] ? getImageUrl(p.image) : (p.image ? getImageUrl(p.image) : '/images/hero_1.png'),
     }))
 })
 </script>

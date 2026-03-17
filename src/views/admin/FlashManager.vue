@@ -13,6 +13,7 @@ import BaseFileUpload from '../../components/ui/BaseFileUpload.vue'
 import ConfirmModal from '../../components/ui/ConfirmModal.vue'
 import { usePagination } from '../../composables/usePagination'
 import { normalizeString } from '../../utils/stringUtils'
+import { getImageUrl } from '../../utils/imageUtils'
 
 const route = useRoute()
 const flashStore = useFlashStore()
@@ -603,7 +604,7 @@ onMounted(() => {
                 <div
                   class="relative w-16 h-16 rounded-xl overflow-hidden shadow-sm border border-gray-100 group-hover:border-purple-200 transition-colors"
                 >
-                  <img :src="item.images[0]" class="w-full h-full object-cover" />
+                  <img :src="getImageUrl(item.images[0])" class="w-full h-full object-cover" />
                   <div
                     v-if="item.images.length > 1"
                     class="absolute bottom-0 right-0 bg-black/50 text-white text-[10px] px-1.5 py-0.5 rounded-tl-lg"
