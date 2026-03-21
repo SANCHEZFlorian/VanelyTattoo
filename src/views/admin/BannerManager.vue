@@ -210,7 +210,10 @@
             :label="$t('settings.carousel.image')"
             :multiple="false"
           />
-          <p class="text-xs text-gray-500 mt-1">Taille recommandée : 1920x500 pixels</p>
+          <p class="text-xs text-orange-600 mt-1 font-medium pb-1">
+            ⚠️ Taille recommandée : 1920x450 pixels (format paysage).<br/>
+            Une image avec ce ratio évitera d'être coupée sur l'accueil.
+          </p>
         </div>
 
         <div class="grid grid-cols-2 gap-4">

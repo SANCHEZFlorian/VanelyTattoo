@@ -181,6 +181,13 @@ const openModal = (item = null) => {
 
 const handleImagesChange = (newImages) => {
   formData.value.images = newImages
+  if (!formData.value.title && newImages.length > 0) {
+    const firstImg = newImages[0]
+    if (firstImg && firstImg.file && firstImg.file.name) {
+      const nameWithoutExt = firstImg.file.name.split('.')[0].replace(/[-_]/g, ' ')
+      formData.value.title = nameWithoutExt.charAt(0).toUpperCase() + nameWithoutExt.slice(1)
+    }
+  }
 }
 
 const saveItem = async () => {
@@ -814,7 +821,7 @@ onMounted(() => {
       :show="showModal"
       :title="isEditing ? $t('flash.editTitle') : $t('flash.addTitle')"
       @close="showModal = false"
-      max-width="4xl"
+      maxWidth="5xl"
     >
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4" @dragover.prevent @drop.prevent="handleDrop">
         <div class="col-span-1 md:col-span-2">
@@ -896,7 +903,7 @@ onMounted(() => {
                     type="checkbox"
                     value="blackwork"
                     v-model="formData.color"
-                    class="rounded text-purple-600 focus:ring-purple-500"
+                    class="w-4 h-4 rounded text-purple-600 focus:ring-purple-500"
                   />
                   <span class="text-sm text-gray-700">Noir & Blanc</span>
                 </label>
@@ -905,7 +912,7 @@ onMounted(() => {
                     type="checkbox"
                     value="color"
                     v-model="formData.color"
-                    class="rounded text-purple-600 focus:ring-purple-500"
+                    class="w-4 h-4 rounded text-purple-600 focus:ring-purple-500"
                   />
                   <span class="text-sm text-gray-700">Couleur</span>
                 </label>

@@ -55,6 +55,15 @@ function createCrudRouter(tableName) {
             const payload = { ...req.body };
             delete payload.id;
             delete payload.created_at;
+            delete payload.updated_at;
+            
+            // Format any incoming ISO dates to MySQL 'YYYY-MM-DD HH:MM:SS'
+            for (const key in payload) {
+                if (typeof payload[key] === 'string' && payload[key].match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)) {
+                    payload[key] = new Date(payload[key]).toISOString().slice(0, 19).replace('T', ' ');
+                }
+            }
+
             const keys = Object.keys(payload);
             const values = Object.values(payload);
 
@@ -81,6 +90,15 @@ function createCrudRouter(tableName) {
             const payload = { ...req.body };
             delete payload.id;
             delete payload.created_at;
+            delete payload.updated_at;
+
+            // Format any incoming ISO dates to MySQL 'YYYY-MM-DD HH:MM:SS'
+            for (const key in payload) {
+                if (typeof payload[key] === 'string' && payload[key].match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)) {
+                    payload[key] = new Date(payload[key]).toISOString().slice(0, 19).replace('T', ' ');
+                }
+            }
+
             const keys = Object.keys(payload);
             const values = Object.values(payload);
 

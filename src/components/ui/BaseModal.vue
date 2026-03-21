@@ -40,7 +40,17 @@ defineEmits(['close'])
           <!-- Modal Panel -->
           <div
             class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full relative z-10"
-            :class="`max-w-${maxWidth}`"
+            :class="{
+              'max-w-md': maxWidth === 'md',
+              'max-w-lg': maxWidth === 'lg',
+              'max-w-xl': maxWidth === 'xl',
+              'max-w-2xl': maxWidth === '2xl',
+              'max-w-3xl': maxWidth === '3xl',
+              'max-w-4xl': maxWidth === '4xl',
+              'max-w-5xl': maxWidth === '5xl',
+              'max-w-6xl': maxWidth === '6xl',
+              'max-w-full': maxWidth === 'full'
+            }"
             @click.stop
           >
             <!-- Header -->

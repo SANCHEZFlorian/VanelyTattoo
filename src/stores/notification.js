@@ -23,11 +23,11 @@ export const useNotificationStore = defineStore('notification', () => {
         }
 
         if (existingIndex !== -1) {
-            notification.id = toasts.value[existingIndex].id;
-            toasts.value.splice(existingIndex, 1, notification);
-        } else {
-            toasts.value.push(notification);
+            // Remove old toast completely so a fresh toast pops in
+            toasts.value.splice(existingIndex, 1);
         }
+        toasts.value.push(notification);
+
 
         // Add to history (limit to last 50 items)
         history.value.unshift(notification)

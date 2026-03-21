@@ -175,7 +175,7 @@ const latestPosts = computed(() => {
 <template>
   <div class="space-y-16">
     <!-- Hero Carousel -->
-    <section class="relative h-[500px] overflow-hidden group">
+    <section class="relative h-[350px] md:h-[450px] overflow-hidden group">
       <div
         v-if="bannerStore.loading"
         class="absolute inset-0 flex items-center justify-center bg-gray-100"

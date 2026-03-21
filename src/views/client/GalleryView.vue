@@ -25,18 +25,36 @@ onMounted(() => {
   }
 })
 
-const selectedGalleryFilter = ref('Tous')
+const selectedGalleryFilters = ref(['Tous'])
 const galleryFilters = computed(() => ['Tous', ...categoryStore.categories])
 
 // Modal state
 const isModalOpen = ref(false)
 const modalItem = ref(null)
 
+const toggleFilter = (filter) => {
+  if (filter === 'Tous') {
+    selectedGalleryFilters.value = ['Tous']
+    return
+  }
+  
+  const idx = selectedGalleryFilters.value.indexOf('Tous')
+  if (idx > -1) selectedGalleryFilters.value.splice(idx, 1)
+
+  const fIdx = selectedGalleryFilters.value.indexOf(filter)
+  if (fIdx > -1) {
+    selectedGalleryFilters.value.splice(fIdx, 1)
+    if (selectedGalleryFilters.value.length === 0) selectedGalleryFilters.value = ['Tous']
+  } else {
+    selectedGalleryFilters.value.push(filter)
+  }
+}
+
 const filteredGallery = computed(() => {
   let items = galleryStore.galleryItems.filter((i) => i.status !== 'standby')
-  if (selectedGalleryFilter.value === 'Tous') return items
-  // Filter if item.categories includes selected ID
-  return items.filter((item) => item.categories.includes(selectedGalleryFilter.value))
+  if (selectedGalleryFilters.value.includes('Tous')) return items
+  // Filter if item.categories includes any of the selected IDs
+  return items.filter((item) => item.categories.some(c => selectedGalleryFilters.value.includes(c)))
 })
 
 const openModal = (item) => {
@@ -80,15 +98,16 @@ watch(
     </h1>
     <!-- Filter Tabs -->
     <div class="flex justify-center mb-8">
-      <div class="flex space-x-4 bg-white rounded-full p-2 shadow-lg">
+      <div class="flex flex-wrap gap-4 bg-white rounded-xl p-3 shadow-sm border border-gray-100 justify-center">
         <button
           v-for="filter in galleryFilters"
           :key="filter"
-          @click="selectedGalleryFilter = filter"
+          @click="toggleFilter(filter)"
           :class="{
-            'bg-blue-400 text-white': selectedGalleryFilter === filter,
+            'bg-purple-600 text-white shadow-md': selectedGalleryFilters.includes(filter),
+            'bg-gray-50 text-gray-700 hover:bg-gray-100': !selectedGalleryFilters.includes(filter)
           }"
-          class="px-6 py-2 rounded-full transition-colors cursor-pointer whitespace-nowrap capitalize"
+          class="px-5 py-2 rounded-lg transition-all cursor-pointer whitespace-nowrap capitalize text-sm font-medium border border-transparent"
         >
           {{ filter }}
         </button>

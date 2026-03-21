@@ -25,6 +25,7 @@ export const useCategoryStore = defineStore('category', () => {
             const { data } = await api.post('/categories', { name })
             if (!categories.value.includes(data.name)) {
                 categories.value.push(data.name)
+                categories.value.sort((a, b) => a.localeCompare(b))
             }
             notificationStore.addNotification("Succès", `Catégorie "${data.name}" ajoutée`, 'success')
             return true
