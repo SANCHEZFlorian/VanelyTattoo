@@ -16,6 +16,7 @@ import ConfirmModal from '../../components/ui/ConfirmModal.vue'
 import { usePagination } from '../../composables/usePagination'
 import { normalizeString } from '../../utils/stringUtils'
 import { getImageUrl } from '../../utils/imageUtils'
+import BaseMultiSelect from '../../components/ui/BaseMultiSelect.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -27,7 +28,7 @@ const notificationStore = useNotificationStore()
 const { t } = useI18n()
 
 const search = ref('')
-const categoryFilter = ref('')
+const categoryFilter = ref([])
 const showModal = ref(false)
 const showCategoryModal = ref(false)
 const isEditing = ref(false)
@@ -110,8 +111,8 @@ const filteredItems = computed(() => {
       item.categories.some((cat) => normalizeString(cat).includes(searchLower)) ||
       (flashTitle && flashTitle.includes(searchLower))
 
-    const matchesCategory = categoryFilter.value
-      ? item.categories.includes(categoryFilter.value)
+    const matchesCategory = categoryFilter.value.length > 0
+      ? categoryFilter.value.some(c => item.categories && item.categories.includes(c))
       : true
     return matchesSearch && matchesCategory
   })
@@ -448,16 +449,12 @@ onMounted(() => {
               class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm bg-gray-50 focus:bg-white transition-colors"
             />
           </div>
-          <div class="w-full md:w-48">
-            <select
+          <div class="w-full md:w-64">
+            <BaseMultiSelect
               v-model="categoryFilter"
-              class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 text-sm bg-gray-50 focus:bg-white transition-colors"
-            >
-              <option value="">{{ $t('flash.filters.allCategories') }}</option>
-              <option v-for="cat in categoryStore.categories" :key="cat" :value="cat">
-                {{ cat }}
-              </option>
-            </select>
+              :options="categoryStore.categories"
+              placeholder="Toutes les catégories"
+            />
           </div>
         </div>
 

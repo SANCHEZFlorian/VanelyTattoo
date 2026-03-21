@@ -14,6 +14,7 @@ import ConfirmModal from '../../components/ui/ConfirmModal.vue'
 import { usePagination } from '../../composables/usePagination'
 import { normalizeString } from '../../utils/stringUtils'
 import { getImageUrl } from '../../utils/imageUtils'
+import BaseMultiSelect from '../../components/ui/BaseMultiSelect.vue'
 
 const route = useRoute()
 const flashStore = useFlashStore()
@@ -97,7 +98,7 @@ const filteredItems = computed(() => {
       item.categories.some((cat) => normalizeString(cat).includes(searchLower))
 
     const matchesCategory = categoryFilter.value && categoryFilter.value.length > 0
-      ? categoryFilter.value.every(c => item.categories && item.categories.includes(c))
+      ? categoryFilter.value.some(c => item.categories && item.categories.includes(c))
       : true
     return matchesSearch && matchesCategory
   })
@@ -494,15 +495,11 @@ onMounted(() => {
             />
           </div>
           <div class="w-full md:w-64">
-            <select
-              multiple
+            <BaseMultiSelect
               v-model="categoryFilter"
-              class="w-full h-24 px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 text-sm bg-gray-50 focus:bg-white transition-colors custom-scrollbar"
-            >
-              <option v-for="cat in categoryStore.categories" :key="cat" :value="cat">
-                {{ cat }}
-              </option>
-            </select>
+              :options="categoryStore.categories"
+              placeholder="Toutes les catégories"
+            />
           </div>
         </div>
 
