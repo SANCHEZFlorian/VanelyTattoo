@@ -12,7 +12,7 @@ export const useCategoryStore = defineStore('category', () => {
         loading.value = true
         try {
             const { data } = await api.get('/categories')
-            categories.value = data.map(c => c.name)
+            categories.value = data.map(c => c.name).sort((a, b) => a.localeCompare(b))
         } catch (error) {
             console.error('Error fetching categories:', error)
         } finally {

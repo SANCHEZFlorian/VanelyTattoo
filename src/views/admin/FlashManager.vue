@@ -22,11 +22,12 @@ const notificationStore = useNotificationStore()
 const { t } = useI18n()
 
 const search = ref('')
-const categoryFilter = ref('')
+const categoryFilter = ref([])
 const showModal = ref(false)
 const showCategoryModal = ref(false)
 const isEditing = ref(false)
 const uploading = ref(false)
+const newCategoryInput = ref('')
 
 // Confirm Modal state
 const confirmModal = ref({
@@ -50,7 +51,7 @@ const formData = ref({
   id: null,
   title: '',
   categories: [],
-  size: 'small',
+  size: [],
   color: 'color',
   standardPrice: 0,
   promoPrice: 0,
@@ -95,8 +96,8 @@ const filteredItems = computed(() => {
       item.id.toString() === searchId ||
       item.categories.some((cat) => normalizeString(cat).includes(searchLower))
 
-    const matchesCategory = categoryFilter.value
-      ? item.categories.includes(categoryFilter.value)
+    const matchesCategory = categoryFilter.value && categoryFilter.value.length > 0
+      ? categoryFilter.value.every(c => item.categories && item.categories.includes(c))
       : true
     return matchesSearch && matchesCategory
   })
@@ -119,11 +120,12 @@ const filteredItems = computed(() => {
 })
 
 const resetForm = () => {
+  newCategoryInput.value = ''
   formData.value = {
     id: null,
     title: '',
     categories: [],
-    size: 'small',
+    size: [],
     color: [],
     standardPrice: 0,
     promoPrice: 0,
@@ -153,12 +155,23 @@ const openModal = (item = null) => {
       prmPrice = item.price
     }
 
+    let parsedSize = []
+    if (item.size) {
+        try {
+            parsedSize = JSON.parse(item.size)
+            if (!Array.isArray(parsedSize)) parsedSize = [parsedSize]
+        } catch {
+            parsedSize = item.size.split(',').map(s => s.trim()).filter(Boolean)
+        }
+    }
+
     formData.value = {
       ...item,
       standardPrice: stdPrice,
       promoPrice: prmPrice,
-      categories: [...item.categories], // Clone array
-      images: [...item.images], // Clone array
+      size: parsedSize,
+      categories: [...(item.categories || [])], // Clone array
+      images: [...(item.images || [])], // Clone array
     }
   } else {
     resetForm()
@@ -214,7 +227,7 @@ const saveItem = async () => {
     const itemData = {
       title: formData.value.title,
       categories: formData.value.categories,
-      size: formData.value.size,
+      size: JSON.stringify(formData.value.size),
       color: formData.value.color,
       price: dbPrice,
       original_price: dbOriginalPrice,
@@ -250,6 +263,29 @@ const deleteItem = async (id) => {
     'danger',
     () => flashStore.deleteFlash(id),
   )
+}
+
+const addNewCategoryToModal = async () => {
+  if (!newCategoryInput.value.trim()) return
+  const name = newCategoryInput.value.trim()
+  const success = await categoryStore.addCategory(name)
+  if (success || categoryStore.categories.includes(name)) {
+    if (!formData.value.categories.includes(name)) {
+        formData.value.categories.push(name)
+    }
+    newCategoryInput.value = ''
+  }
+}
+
+const handleDrop = (event) => {
+  const files = event.dataTransfer?.files
+  if (files && files.length > 0) {
+     const newFiles = Array.from(files).map(file => ({ file, url: URL.createObjectURL(file) }))
+     formData.value.images = [...formData.value.images, ...newFiles]
+     if (!formData.value.title && files[0].name) {
+         formData.value.title = files[0].name.split('.')[0].replace(/[-_]/g, ' ')
+     }
+  }
 }
 
 // Category Management
@@ -450,12 +486,12 @@ onMounted(() => {
               class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm bg-gray-50 focus:bg-white transition-colors"
             />
           </div>
-          <div class="w-full md:w-48">
+          <div class="w-full md:w-64">
             <select
+              multiple
               v-model="categoryFilter"
-              class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 text-sm bg-gray-50 focus:bg-white transition-colors"
+              class="w-full h-24 px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 text-sm bg-gray-50 focus:bg-white transition-colors custom-scrollbar"
             >
-              <option value="">{{ $t('flash.filters.allCategories') }}</option>
               <option v-for="cat in categoryStore.categories" :key="cat" :value="cat">
                 {{ cat }}
               </option>
@@ -778,8 +814,9 @@ onMounted(() => {
       :show="showModal"
       :title="isEditing ? $t('flash.editTitle') : $t('flash.addTitle')"
       @close="showModal = false"
+      max-width="4xl"
     >
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4" @dragover.prevent @drop.prevent="handleDrop">
         <div class="col-span-1 md:col-span-2">
           <BaseInput
             v-model="formData.title"
@@ -791,9 +828,13 @@ onMounted(() => {
 
         <!-- Split Categories (Left) and Details (Right) -->
         <div class="md:col-span-1 flex flex-col h-full">
-          <label class="block text-sm font-medium text-gray-700 mb-1">{{
-            $t('flash.form.category')
-          }}</label>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-sm font-medium text-gray-700">{{ $t('flash.form.category') }}</label>
+          </div>
+          <div class="flex items-center gap-2 mb-2">
+            <input v-model="newCategoryInput" type="text" placeholder="Nouvelle" class="flex-1 px-2 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 outline-none" @keyup.enter="addNewCategoryToModal" />
+            <button @click="addNewCategoryToModal" type="button" class="px-2 py-1 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 text-sm"><i class="fas fa-plus text-purple-600"></i></button>
+          </div>
           <div
             class="flex-1 flex flex-col space-y-2 overflow-y-auto border border-gray-300 rounded-lg p-3 min-h-[200px]"
           >
@@ -806,7 +847,7 @@ onMounted(() => {
                 type="checkbox"
                 :value="cat"
                 v-model="formData.categories"
-                class="rounded text-purple-600 focus:ring-purple-500"
+                class="w-4 h-4 rounded text-purple-600 focus:ring-purple-500"
               />
               <span class="text-sm text-gray-700">{{ cat }}</span>
             </label>
@@ -832,14 +873,20 @@ onMounted(() => {
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Taille</label>
-              <select
-                v-model="formData.size"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
-              >
-                <option value="small">Petit (5-10cm)</option>
-                <option value="medium">Moyen (10-15cm)</option>
-                <option value="large">Grand (15cm+)</option>
-              </select>
+              <div class="flex flex-wrap gap-4 mt-1">
+                <label class="flex items-center space-x-2 cursor-pointer">
+                  <input type="checkbox" value="small" v-model="formData.size" class="w-4 h-4 rounded text-purple-600 focus:ring-purple-500"/>
+                  <span class="text-sm text-gray-700">Petit</span>
+                </label>
+                <label class="flex items-center space-x-2 cursor-pointer">
+                  <input type="checkbox" value="medium" v-model="formData.size" class="w-4 h-4 rounded text-purple-600 focus:ring-purple-500"/>
+                  <span class="text-sm text-gray-700">Moyen</span>
+                </label>
+                <label class="flex items-center space-x-2 cursor-pointer">
+                  <input type="checkbox" value="large" v-model="formData.size" class="w-4 h-4 rounded text-purple-600 focus:ring-purple-500"/>
+                  <span class="text-sm text-gray-700">Grand</span>
+                </label>
+              </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Couleur</label>

@@ -210,6 +210,7 @@
             :label="$t('settings.carousel.image')"
             :multiple="false"
           />
+          <p class="text-xs text-gray-500 mt-1">Taille recommandée : 1920x500 pixels</p>
         </div>
 
         <div class="grid grid-cols-2 gap-4">

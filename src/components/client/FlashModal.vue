@@ -146,7 +146,7 @@ const copyLink = () => {
                   </span>
                 </div>
                 <div class="space-y-2">
-                  <p class="text-gray-600">Taille: {{ item?.size }}</p>
+                  <p class="text-gray-600">Taille: {{ Array.isArray(item?.size) ? item?.size.join(', ') : item?.size }}</p>
                   <p class="text-gray-600">
                     Style:
                     {{ item?.color === 'color' ? 'Couleur' : 'Noir & Gris' }}

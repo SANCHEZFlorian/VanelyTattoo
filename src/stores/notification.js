@@ -16,8 +16,18 @@ export const useNotificationStore = defineStore('notification', () => {
             date: new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
         }
 
-        // Add to active toasts
-        toasts.value.push(notification)
+        // Custom logic to replace "Sauvegarde" info toasts with success/error
+        let existingIndex = -1;
+        if ((title === 'Succès' || title === 'Erreur' || title === 'Publié !') && toasts.value.some(t => t.title === 'Sauvegarde')) {
+            existingIndex = toasts.value.findIndex(t => t.title === 'Sauvegarde');
+        }
+
+        if (existingIndex !== -1) {
+            notification.id = toasts.value[existingIndex].id;
+            toasts.value.splice(existingIndex, 1, notification);
+        } else {
+            toasts.value.push(notification);
+        }
 
         // Add to history (limit to last 50 items)
         history.value.unshift(notification)

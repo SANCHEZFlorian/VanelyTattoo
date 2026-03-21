@@ -229,7 +229,6 @@ const saveItem = async () => {
       images: finalImageUrls, // Updated with public URLs
       status: formData.value.status,
       flash_id: formData.value.flashId,
-      price: formData.value.price,
     }
 
     if (isEditing.value) {

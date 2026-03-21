@@ -52,8 +52,11 @@ function createCrudRouter(tableName) {
     // POST
     router.post('/', authMiddleware, async (req, res) => {
         try {
-            const keys = Object.keys(req.body);
-            const values = Object.values(req.body);
+            const payload = { ...req.body };
+            delete payload.id;
+            delete payload.created_at;
+            const keys = Object.keys(payload);
+            const values = Object.values(payload);
 
             // Convert arrays/objects to JSON strings for MariaDB if necessary
             const preparedValues = values.map(v => (typeof v === 'object' && v !== null) ? JSON.stringify(v) : v);
@@ -75,8 +78,11 @@ function createCrudRouter(tableName) {
     // PUT
     router.put('/:id', authMiddleware, async (req, res) => {
         try {
-            const keys = Object.keys(req.body);
-            const values = Object.values(req.body);
+            const payload = { ...req.body };
+            delete payload.id;
+            delete payload.created_at;
+            const keys = Object.keys(payload);
+            const values = Object.values(payload);
 
             const setClause = keys.map(key => `${key} = ?`).join(', ');
             const preparedValues = values.map(v => (typeof v === 'object' && v !== null) ? JSON.stringify(v) : v);
