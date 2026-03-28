@@ -228,9 +228,9 @@ const copyLink = () => {
                   </p>
                 </div>
                 <div class="flex flex-wrap gap-2 mt-4">
-                  <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm"
-                    >Design Personnalisé</span
-                  >
+                  <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-medium">
+                    {{ item?.is_custom ? 'Design Personnalisé' : 'Flash Tattoo' }}
+                  </span>
                   <div class="flex flex-wrap gap-1">
                     <span
                       v-for="cat in item?.categories"

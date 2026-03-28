@@ -67,6 +67,7 @@ const formData = ref({
   flashId: null, // Added flashId
   flashData: null, // Store full flash data for display
   price: null,
+  is_custom: false,
 })
 
 const sortKey = ref('title')
@@ -146,6 +147,7 @@ const resetForm = () => {
     flashId: null,
     flashData: null,
     price: null,
+    is_custom: false,
   }
   flashSearch.value = ''
   isEditing.value = false
@@ -159,6 +161,7 @@ const openModal = (item = null) => {
       categories: [...item.categories],
       images: [...item.images],
       flashId: item.flash_id || item.flashId, // Map snake_case from DB
+      is_custom: !!(item.is_custom),
     }
     // If there is a linked flash
     if (formData.value.flashId) {
@@ -230,6 +233,7 @@ const saveItem = async () => {
       images: finalImageUrls, // Updated with public URLs
       status: formData.value.status,
       flash_id: formData.value.flashId,
+      is_custom: formData.value.is_custom ? 1 : 0,
     }
 
     if (isEditing.value) {
@@ -385,6 +389,13 @@ const initializeFromQuery = () => {
     }
     if (route.query.price) {
       formData.value.price = Number(route.query.price)
+    }
+    if (route.query.isCustom !== undefined) {
+      formData.value.is_custom = route.query.isCustom === 'true'
+    } else if (route.query.flashId) {
+      formData.value.is_custom = false
+    } else {
+      formData.value.is_custom = true // Default if from refId but no flashId
     }
     showModal.value = true
   }
@@ -797,6 +808,31 @@ onMounted(() => {
                 </div>
               </div>
             </div>
+        </div>
+      </div>
+
+        <!-- Project Type Selector -->
+        <div class="p-4 bg-gray-50 border border-gray-100 rounded-xl space-y-3">
+          <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest">Type de réalisation</label>
+          <div class="flex gap-8">
+            <label class="flex items-center gap-2.5 cursor-pointer group">
+              <input 
+                type="radio" 
+                :value="false" 
+                v-model="formData.is_custom" 
+                class="w-4 h-4 text-purple-600 focus:ring-purple-500 border-gray-300" 
+              />
+              <span class="text-sm font-semibold text-gray-700 group-hover:text-purple-600 transition-colors">Flash Tattoo</span>
+            </label>
+            <label class="flex items-center gap-2.5 cursor-pointer group">
+              <input 
+                type="radio" 
+                :value="true" 
+                v-model="formData.is_custom" 
+                class="w-4 h-4 text-purple-600 focus:ring-purple-500 border-gray-300" 
+              />
+              <span class="text-sm font-semibold text-gray-700 group-hover:text-purple-600 transition-colors">Design Personnalisé</span>
+            </label>
           </div>
         </div>
 

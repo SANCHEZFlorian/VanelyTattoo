@@ -489,6 +489,10 @@ const publishToGallery = (booking) => {
 
   query.fromBilan = 'true'
   if (booking.price) query.price = booking.price
+  
+  // Detect if it's a custom design or flash
+  query.isCustom = flash ? 'false' : 'true'
+  
   router.push({ path: '/admin/gallery', query })
 }
 

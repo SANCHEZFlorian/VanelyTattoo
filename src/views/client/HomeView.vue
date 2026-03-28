@@ -407,7 +407,7 @@ const latestPosts = computed(() => {
     </section>
 
     <!-- Latest Blog Posts -->
-    <section class="container mx-auto px-4 pb-16">
+    <section v-if="latestPosts.length > 0" class="container mx-auto px-4 pb-16">
       <h2 class="text-3xl font-bold text-center mb-12">Dernières nouvelles</h2>
       <div class="grid md:grid-cols-2 gap-8">
         <article
